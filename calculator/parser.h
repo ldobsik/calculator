@@ -25,13 +25,13 @@ public:
         bool equal_to_zero;
     };
 
-    struct parerror {
+    struct error {
         const std::string msg;
         const token  t;
-        parerror(const token *it, const std::string &im) :msg(im), t(*it) {};
+        error(const token *it, const std::string &im) :msg(im), t(*it) {};
     };
 
-    std::vector<result> parse(const token*);
+    static std::vector<result> parse(const std::vector<token>&);
 private:
 
     enum class expr_rule {
@@ -44,8 +44,8 @@ private:
         function,
     };
 
-    T parse_expr(const token*&, const expr_rule);
-    result parse_eq(const token*&);
+    static T parse_expr(const token*&, const expr_rule);
+    static result parse_eq(const token*&);
 };
 
 
@@ -128,26 +128,22 @@ T parser<T>::parse_expr(const token*& pt, const expr_rule cr)
                 else {
                     //variable
                     std::istringstream ss(pt->s);
-                    try {
-                        ss >> result;
-                        if (ss.fail()) throw 0;
-                    }
-                    catch (...) {
-                        throw parerror(pt, "backend can't handle variables");
-                    }
+                    ot = pt;
+                    ss >> result;
+                    if (ss.fail()) throw  error(pt, "backend can't handle variables");
                     pt++;
                 }
             }
             else if (pt->s == "(") {
                 result = parse_expr(pt, expr_rule::parentheses);
             }
-            else throw parerror(pt, "missing operand");
+            else throw error(pt, "missing operand");
             break;
         case expr_rule::parentheses:
-            if (pt->s != "(") throw parerror(pt, "missing left parenthesis");
+            if (pt->s != "(") throw error(pt, "missing left parenthesis");
             pt++;
             result = parse_expr(pt, expr_rule::additive);
-            if (pt->s != ")") throw parerror(pt, "missing right parenthesis");
+            if (pt->s != ")") throw error(pt, "missing right parenthesis");
             pt++;
             break;
         case expr_rule::function:
@@ -155,7 +151,7 @@ T parser<T>::parse_expr(const token*& pt, const expr_rule cr)
         }
     }
     catch (std::exception &e) {
-        throw parerror(ot, e.what());
+        throw error(ot, e.what());
     }
 
     return result;
@@ -175,15 +171,19 @@ typename parser<T>::result parser<T>::parse_eq(const token*& pt)
         lhs = lhs - parse_expr(pt, expr_rule::additive);
     }
     catch (std::exception &e) {
-        throw parerror(ot, e.what());
+        throw error(ot, e.what());
     }
 
     return result{ lhs, true };
 }
 
 template<typename T>
-std::vector<typename parser<T>::result> parser<T>::parse(const token* pt)
+std::vector<typename parser<T>::result> parser<T>::parse(const std::vector<token>& vt)
 {
+    assert(vt.back().type == tok_t::end);
+
+    const token* pt = &vt[0];
+
     std::vector<result> r;
 
     if (pt->type == tok_t::end) return r;
@@ -192,7 +192,7 @@ std::vector<typename parser<T>::result> parser<T>::parse(const token* pt)
 
     for (;;) {
         if (pt->type == tok_t::end) return r;
-        if (pt->s != ",") throw parerror(pt, "unexpected input");
+        if (pt->s != ",") throw error(pt, "unexpected input");
         pt++;
         r.push_back(parse_eq(pt));
     }

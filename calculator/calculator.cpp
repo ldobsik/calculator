@@ -6,19 +6,21 @@
 #include "parser.h"
 #include "linear.h"
 
+using numtype = linear<double>;
+
+
 int main()
 {
-    using numtype = linear<double>;
-    parser<numtype> p;
-    std::string input;
 
     for (;;) {
+        std::string input;
+
         std::getline(std::cin, input);
         if (input.empty()) break;
 
         auto t = tokenize(input);
         try {
-            auto result = p.parse(t.data());
+            auto result = parser<numtype>::parse(t);
             for (auto &z : result) {
                 std::cout << "Answer: ";
                 if (z.equal_to_zero) {
@@ -31,9 +33,9 @@ int main()
                     for (auto i = begin(x); i != end(x);) {
                         if (i->second == 0) {
                             free_vars.push_back(i->first);
-                            x.erase(i++);
+                            i = x.erase(i);
                         }
-                        else i++;
+                        else ++i;
                     }
 
                     // no fixed variables
@@ -64,7 +66,7 @@ int main()
             }
 
         }
-        catch (parser<numtype>::parerror &e) {
+        catch (parser<numtype>::error &e) {
             auto pos = e.t.pos;
             std::cerr << std::endl << input << std::endl;
             std::cerr << std::string(pos, ' ') << "^~~~~ " << e.msg << std::endl;

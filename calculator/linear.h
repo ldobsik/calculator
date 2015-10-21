@@ -11,9 +11,9 @@
 
 template<typename T>
 struct linear {
-    struct operror : public std::exception {
+    struct error : public std::exception {
         const std::string msg;
-        operror(const std::string & im) :msg(im) {};
+        error(const std::string & im) :msg(im) {};
 
         virtual const char* what() const throw()
         {
@@ -133,7 +133,7 @@ linear<T> operator-(const linear<T> &b1, const linear<T> &b2)
 template<typename T>
 linear<T> operator*(const linear<T> &b1, const linear<T> &b2)
 {
-    if(!b1.x.empty() && !b2.x.empty()) throw typename linear<T>::operror("polynomial of order > 1 not allowed");
+    if(!b1.x.empty() && !b2.x.empty()) throw typename linear<T>::error("polynomial of order > 1 not allowed");
     
     linear<T> res(b1.d * b2.d);
 
@@ -153,14 +153,14 @@ linear<T> operator*(const linear<T> &b1, const linear<T> &b2)
 template<typename T>
 linear<T> operator/(const linear<T> &b1, const linear<T> &b2)
 {
-    if (b2.d == 0 && b2.x.empty()) throw typename linear<T>::operror("division by zero");
+    if (b2.d == 0 && b2.x.empty()) throw typename linear<T>::error("division by zero");
 
     if (b2.d != 0 && b2.x.empty()) {
         linear<T> q(1 / b2.d);
         return  q * b1;
     }
 
-    throw typename linear<T>::operror("polynomial fraction not allowed");
+    throw typename linear<T>::error("polynomial fraction not allowed");
 }
 
 template<typename T>
@@ -174,7 +174,7 @@ linear<T> operator-(const linear<T> &b)
 template<typename T>
 linear<T> log(const linear<T> &b)
 {
-    if (!b.x.empty()) throw typename linear<T>::operror("log of polynomial not allowed");
+    if (!b.x.empty()) throw typename linear<T>::error("log of polynomial not allowed");
 
     linear<T> res(log(b.d));
 
@@ -184,8 +184,8 @@ linear<T> log(const linear<T> &b)
 template<typename T>
 linear<T> pow(const linear<T> &b1, const linear<T> &b2)
 {
-    if (!b2.x.empty()) throw typename linear<T>::operror("polynomial exponent not allowed");
-    if (!b1.x.empty()) throw typename linear<T>::operror("power of polynomial not allowed");
+    if (!b2.x.empty()) throw typename linear<T>::error("polynomial exponent not allowed");
+    if (!b1.x.empty()) throw typename linear<T>::error("power of polynomial not allowed");
 
     linear<T> res(pow(b1.d, b2.d));
 

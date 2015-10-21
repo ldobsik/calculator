@@ -1,6 +1,7 @@
 #ifndef LINEAR_H
 #define LINEAR_H
 
+#include <algorithm>
 #include <sstream>
 #include <iostream>
 #include <string>
@@ -93,6 +94,14 @@ std::ostream& operator<< (std::ostream& os, const linear<T>& b)
 
 
     return os;
+}
+
+template<typename T>
+bool operator==(const linear<T> &b1, const linear<T> &b2)
+{
+    auto diff = b1 - b2;
+
+    return (diff.d == 0) && std::all_of(diff.x.begin(), diff.x.end(), [](auto x) {return x.second == 0;});
 }
 
 template<typename T>

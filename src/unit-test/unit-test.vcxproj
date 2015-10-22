@@ -170,7 +170,7 @@
   <ItemGroup>
     <ClCompile Include="..\calculator\lexer.cpp" />
     <ClCompile Include="test-lexer.cpp" />
-    <ClCompile Include="test-linear.cpp" />
+    <ClCompile Include="test-affine.cpp" />
     <ClCompile Include="test-parser.cpp" />
   </ItemGroup>
   <ItemGroup>

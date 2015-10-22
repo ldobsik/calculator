@@ -3,58 +3,58 @@
 
 #include <gtest/gtest.h>
 
-#include "linear.h"
+#include "affine.h"
 
-TEST(Linear, ConstructN)
+TEST(Affine, ConstructN)
 {
-    linear<double> a(5);
+    affine<double> a(5);
 
     EXPECT_EQ(a.d, 5);
     EXPECT_EQ(a.x.size(), 0);
 }
 
-TEST(Linear, ConstructX)
+TEST(Affine, ConstructX)
 {
-    linear<double> a(7, "x");
+    affine<double> a(7, "x");
 
     EXPECT_EQ(a.d, 0);
     EXPECT_EQ(a.x["x"], 7);
 }
 
-TEST(Linear, Add)
+TEST(Affine, Add)
 {
-    auto a = linear<double>(3,"x");
-    auto b = linear<double>(4);
+    auto a = affine<double>(3,"x");
+    auto b = affine<double>(4);
     auto r = a + b;
 
     EXPECT_EQ(r.x["x"], 3);
     EXPECT_EQ(r.d, 4);
 }
 
-TEST(Linear, Sub)
+TEST(Affine, Sub)
 {
-    auto a = linear<double>(8,"z");
-    auto b = linear<double>(1);
+    auto a = affine<double>(8,"z");
+    auto b = affine<double>(1);
     auto r = a - b;
 
     EXPECT_EQ(r.x["z"], 8);
     EXPECT_EQ(r.d, -1);
 }
 
-TEST(Linear, Mul)
+TEST(Affine, Mul)
 {
-    auto a = linear<double>(8,"y");
-    auto b = linear<double>(7);
+    auto a = affine<double>(8,"y");
+    auto b = affine<double>(7);
     auto r = a * b;
 
     EXPECT_EQ(r.x["y"], 56);
     EXPECT_EQ(r.d, 0);
 }
 
-TEST(Linear, Div)
+TEST(Affine, Div)
 {
-    auto a = linear<double>(8,"y");
-    auto b = linear<double>(4);
+    auto a = affine<double>(8,"y");
+    auto b = affine<double>(4);
     auto r = a / b;
 
     EXPECT_EQ(r.x["y"], 2);

@@ -4,10 +4,10 @@
 
 #include "lexer.h"
 #include "parser.h"
-#include "linear.h"
+#include "affine.h"
 
 using numtype  = double;
-using atomtype = linear<numtype>;
+using atomtype = affine<numtype>;
 using restype  = parser<atomtype>::result;
 
 

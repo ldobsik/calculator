@@ -35,7 +35,7 @@
     <ClCompile Include="test-parser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test-linear.cpp">
+    <ClCompile Include="test-affine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

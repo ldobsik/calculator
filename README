@@ -7,7 +7,7 @@ Description:
         basic mathematical oparations +,-,*,/, logarithm of expression 'log' or 
         rising a number to an arbitrary power, it can also contain floating point
         numbers and variables. Number of variables used is not limited.
-        Expressions are simplified to the form of linear functions or an error is 
+        Expressions are simplified to be explicitly affine (if they can) or an error is 
         reported if this is not possible. For the equations, if there's only one
         fixed variable, the calculator tries to solve for it.
 
@@ -20,7 +20,7 @@ Design:
         This is a template class that can be parametrized by any atom class that is able
         to represent numbers. It evaluates the operators and produces a vector of
         simplified atoms or equations.
-       * linear: representation of affine expressions. This can be used as the template
+       * affine: representation of affine expressions. This can be used as the template
         type for the parser. The class itself is also a template, allowing change of
         internal representation of numbers (i.e. double or boost::multiprecision::cpp_dec_float<>)
        * calculator: the main driver that reads the input from stdin, passes it to the

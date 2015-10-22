@@ -151,7 +151,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lexer.h" />
-    <ClInclude Include="linear.h" />
+    <ClInclude Include="affine.h" />
     <ClInclude Include="parser.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />

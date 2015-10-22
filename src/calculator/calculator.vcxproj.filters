@@ -30,7 +30,7 @@
     <ClInclude Include="parser.h">
       <Filter>Source Files</Filter>
     </ClInclude>
-    <ClInclude Include="linear.h">
+    <ClInclude Include="affine.h">
       <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>

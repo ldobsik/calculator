@@ -41,7 +41,6 @@ private:
         power,
         primary,
         parentheses,
-        function,
     };
 
     static T parse_expr(const token*&, const expr_rule);
@@ -145,8 +144,6 @@ T parser<T>::parse_expr(const token*& pt, const expr_rule cr)
             result = parse_expr(pt, expr_rule::additive);
             if (pt->s != ")") throw error(pt, "missing right parenthesis");
             pt++;
-            break;
-        case expr_rule::function:
             break;
         }
     }

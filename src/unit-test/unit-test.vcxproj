@@ -174,8 +174,11 @@
     <ClCompile Include="test-parser.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\..\..\Programs\gtest-1.7.0\msvc\gtest.vcxproj">
+    <ProjectReference Include="..\..\..\..\..\..\..\..\Programs\gtest-1.7.0\msvc\gtest.vcxproj">
       <Project>{c8f6c172-56f2-4e76-b5fa-c3b423b31be7}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\calculator\calculator.vcxproj">
+      <Project>{3dfc5269-0a8a-4690-aff9-298dacaf6f9f}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

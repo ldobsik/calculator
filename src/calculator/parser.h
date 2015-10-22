@@ -52,7 +52,7 @@ private:
 template<typename T>
 T parser<T>::parse_expr(const token*& pt, const expr_rule cr)
 {
-    const token* ot = pt;
+    const token* ot = pt;   // operator token (for diagnostics)
     T result{ 0 };
     try {
         switch (cr) {

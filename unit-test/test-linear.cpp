@@ -7,7 +7,7 @@
 
 TEST(Linear, ConstructN)
 {
-    linear<double> a{ 5 };
+    linear<double> a(5);
 
     EXPECT_EQ(a.d, 5);
     EXPECT_EQ(a.x.size(), 0);
@@ -15,10 +15,10 @@ TEST(Linear, ConstructN)
 
 TEST(Linear, ConstructX)
 {
-    linear<double> a{ "x" };
+    linear<double> a(7, "x");
 
     EXPECT_EQ(a.d, 0);
-    EXPECT_EQ(a.x["x"], 1);
+    EXPECT_EQ(a.x["x"], 7);
 }
 
 TEST(Linear, Add)

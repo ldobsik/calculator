@@ -22,7 +22,7 @@ struct linear {
     };
 
     linear(const T& id = 0) : d(id) {};
-    linear(const std::string& ix) : d(0) { x[ix] = 1; };
+    linear(const T& ix, const std::string& iname) : d(0) { x[iname] = ix; };
     template<typename U>
     friend std::ostream& operator << (std::ostream& os, const linear<U>& b);
 

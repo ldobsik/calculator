@@ -25,6 +25,8 @@ struct linear {
     linear(const T& ix, const std::string& iname) : d(0) { x[iname] = ix; };
     template<typename U>
     friend std::ostream& operator << (std::ostream& os, const linear<U>& b);
+    
+    bool isConstant() const { return std::all_of(x.begin(), x.end(), [](auto &x) {return x.second == 0;}); };
 
     std::map<std::string, T> x;
     T d;
@@ -73,14 +75,13 @@ template<typename T>
 std::ostream& operator<< (std::ostream& os, const linear<T>& b)
 {
     bool pvars = false;
-    for (auto i = begin(b.x);i != end(b.x); i++) {
-        T x = i->second;
-        if (x == 0) continue;
+    for (auto &x: b.x) {
+        if (x.second == 0) continue;
         if (pvars) {
-            if(x > 0) os << " + ";
+            if(x.second > 0) os << " + ";
             else os << " - ";
         }
-        os << b.prettyPrintTerm(*i).substr(pvars && x < 0);
+        os << b.prettyPrintTerm(x).substr(pvars && x.second < 0);
         pvars = true;
     }
 
@@ -101,7 +102,7 @@ bool operator==(const linear<T> &b1, const linear<T> &b2)
 {
     auto diff = b1 - b2;
 
-    return (diff.d == 0) && std::all_of(diff.x.begin(), diff.x.end(), [](auto x) {return x.second == 0;});
+    return (diff.d == 0) && diff.isConstant();
 }
 
 template<typename T>
@@ -110,8 +111,8 @@ linear<T> operator+(const linear<T> &b1, const linear<T> &b2)
     linear<T> res(b1.d + b2.d);
 
     res.x = b1.x;
-    for (auto ix = begin(b2.x); ix != end(b2.x); ix++) {
-        res.x[ix->first] = res.x[ix->first] + ix->second;
+    for (auto &x: b2.x) {
+        res.x[x.first] = res.x[x.first] + x.second;
     }
     
     return res;
@@ -123,8 +124,8 @@ linear<T> operator-(const linear<T> &b1, const linear<T> &b2)
     linear<T> res(b1.d - b2.d);
 
     res.x = b1.x;
-    for (auto ix = begin(b2.x); ix != end(b2.x); ix++) {
-        res.x[ix->first] = res.x[ix->first] - ix->second;
+    for (auto &x : b2.x) {
+        res.x[x.first] = res.x[x.first] - x.second;
     }
 
     return res;
@@ -133,18 +134,15 @@ linear<T> operator-(const linear<T> &b1, const linear<T> &b2)
 template<typename T>
 linear<T> operator*(const linear<T> &b1, const linear<T> &b2)
 {
-    if(!b1.x.empty() && !b2.x.empty()) throw typename linear<T>::error("polynomial of order > 1 not allowed");
-    
     linear<T> res(b1.d * b2.d);
 
-    auto &x = b1.x.empty() ? b2.x : b1.x;
-    auto &d = b1.x.empty() ? b1.d : b2.d;
-
-    if (d != 0) {
-        for (auto ix = begin(x); ix != end(x); ix++) {
-            res.x[ix->first] = ix->second * d;
-        }
+    if (b1.isConstant()) {
+        for (auto &x:b2.x)  res.x[x.first] = x.second * b1.d;
     }
+    else if (b2.isConstant()) {
+        for (auto &x : b1.x)  res.x[x.first] = x.second * b2.d;
+    }
+    else throw typename linear<T>::error("polynomial of order > 1 not allowed");
 
     return res;
 }
@@ -153,42 +151,35 @@ linear<T> operator*(const linear<T> &b1, const linear<T> &b2)
 template<typename T>
 linear<T> operator/(const linear<T> &b1, const linear<T> &b2)
 {
-    if (b2.d == 0 && b2.x.empty()) throw typename linear<T>::error("division by zero");
-
-    if (b2.d != 0 && b2.x.empty()) {
-        linear<T> q(1 / b2.d);
-        return  q * b1;
-    }
-
-    throw typename linear<T>::error("polynomial fraction not allowed");
+    if (!b2.isConstant()) throw typename linear<T>::error("polynomial fraction not allowed"); 
+    else if(b2.d == 0)    throw typename linear<T>::error("division by zero");
+    
+    linear<T> q(1 / b2.d);
+    return  q * b1;
 }
 
 template<typename T>
 linear<T> operator-(const linear<T> &b)
 {
-    linear<T> res(0);
+    linear<T> zero(0);
     
-    return res - b;
+    return zero - b;
 }
 
 template<typename T>
 linear<T> log(const linear<T> &b)
 {
-    if (!b.x.empty()) throw typename linear<T>::error("log of polynomial not allowed");
+    if (!b.isConstant()) throw typename linear<T>::error("log of polynomial not allowed");
 
-    linear<T> res(log(b.d));
-
-    return res;
+    return log(b.d);
 }
 
 template<typename T>
 linear<T> pow(const linear<T> &b1, const linear<T> &b2)
 {
-    if (!b2.x.empty()) throw typename linear<T>::error("polynomial exponent not allowed");
-    if (!b1.x.empty()) throw typename linear<T>::error("power of polynomial not allowed");
+    if (!b2.isConstant()) throw typename linear<T>::error("polynomial exponent not allowed");
+    if (!b1.isConstant()) throw typename linear<T>::error("power of polynomial not allowed");
 
-    linear<T> res(pow(b1.d, b2.d));
-
-    return res;
+    return pow(b1.d, b2.d);
 }
 #endif

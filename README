@@ -1,0 +1,51 @@
+Scientific calculator
+---------------------
+
+Description:
+        The calculator parses lines from standard inputs as a list of mathematical 
+        expressions or equations separated by commas. The input can contain the
+        basic mathematical oparations +,-,*,/, logarithm of expression 'log' or 
+        rising a number to an arbitrary power, it can also contain floating point
+        numbers and variables. Number of variables used is not limited.
+        Expressions are simplified to the form of linear functions or an error is 
+        reported if this is not possible. For the equations, if there's only one
+        fixed variable, the calculator tries to solve for it.
+
+Design:
+        The souce code consists of four main modules:
+       * lexer: transforms the input string into a vector of tokens for the parser
+       * parser: parses the input vector of tokens as a mathematical expression.
+        This is a template class that can be parametrized by any atom class that is able
+        to represent numbers. It evaluates the operators and produces a vector of
+        simplified atoms or equations.
+       * linear: representation of affine expressions. This can be used as the template
+        type for the parser. The class itself is also a template, allowing change of
+        internal representation of numbers (i.e. double or boost::multiprecision::cpp_dec_float<>)
+       * calculator: the main driver that reads the input from stdin, passes it to the
+        lexer, parser and tries to solve the affine expressions with a signle fixed variables.
+        The results and errors are reported to cout. Empty input expression quits the
+        input reading loop.
+        
+        Parser grammar:
+
+        Input          <-  Equation
+                           Input ',' Equation
+        Equation       <-  Additive 
+                           Additive '=' Additive
+        Additive       <-  Multiplicative
+                           Additive '+' Multiplicative
+                           Additive '-' Multiplicative
+        Multiplicative <-  Unary
+                           Multiplicative '*' Unary
+                           Multiplicative '/' Unary
+        Unary          <-  Power
+                           '+' Unary
+                           '-' Unary
+        Power          <-  Primary
+                           Primary '^' Unary
+        Primary        <-  *Number
+                           'log' Parentheses
+                           *Variable
+                           Parentheses
+        Parentheses    <-  '(' Additive ')'
+

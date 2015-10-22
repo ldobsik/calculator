@@ -37,7 +37,7 @@ TEST(ParserDouble, Expr1)
     EXPECT_EQ(parser<double>::parse(expr)[0].atom, 30.0);
 }
 
-TEST(ParserDouble, Equation1)
+TEST(ParserLinearDouble, Equation1)
 {
     std::vector<token> equation{  /* 2*x+0.5=1 */
         { tok_t::num,   "2", 0 },
@@ -52,7 +52,18 @@ TEST(ParserDouble, Equation1)
 
     using atom = linear<double>;
 
-    EXPECT_EQ(parser<linear<double>>::parse(equation)[0].atom, atom(2,"x")-atom(0.5));
-    EXPECT_TRUE(parser<linear<double>>::parse(equation)[0].equal_to_zero);
+    EXPECT_EQ(parser<atom>::parse(equation)[0].atom, atom(2,"x")-atom(0.5));
+    EXPECT_TRUE(parser<atom>::parse(equation)[0].equal_to_zero);
+}
+
+TEST(ParserLinearDouble, LexerIntegrtion)
+{
+    std::string input = "  2 * x + 0.5 = 1  ";
+    std::vector<token> tokens = tokenize(input);
+
+    using atom = linear<double>;
+
+    EXPECT_EQ(parser<atom>::parse(tokens)[0].atom, atom(2, "x") - atom(0.5));
+    EXPECT_TRUE(parser<atom>::parse(tokens)[0].equal_to_zero);
 }
 

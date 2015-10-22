@@ -62,4 +62,5 @@ Design:
         Unit testing:
 
         A simple testsuite of the modules using the google test framework was prepared
-        for demonstration purposes.
+        for demonstration purposes. Google test library is assumed to be located
+        at C:\local\gtest-1.7.0\

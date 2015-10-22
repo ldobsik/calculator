@@ -53,7 +53,7 @@ template<typename T>
 T parser<T>::parse_expr(const token*& pt, const expr_rule cr)
 {
     const token* ot = pt;
-    T result(0);
+    T result{ 0 };
     try {
         switch (cr) {
         case expr_rule::additive:

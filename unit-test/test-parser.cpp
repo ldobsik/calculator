@@ -53,5 +53,6 @@ TEST(ParserDouble, Equation1)
     using atom = linear<double>;
 
     EXPECT_EQ(parser<linear<double>>::parse(equation)[0].atom, atom(2)*atom("x")-atom(0.5));
+    EXPECT_TRUE(parser<linear<double>>::parse(equation)[0].equal_to_zero);
 }
 

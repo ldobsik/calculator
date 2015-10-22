@@ -11,6 +11,8 @@ Description:
         reported if this is not possible. For the equations, if there's only one
         fixed variable, the calculator tries to solve for it.
 
+
+
 Design:
         The souce code consists of four main modules:
        * lexer: transforms the input string into a vector of tokens for the parser
@@ -26,7 +28,8 @@ Design:
         The results and errors are reported to cout. Empty input expression quits the
         input reading loop.
         
-        Parser grammar:
+        
+        Parser grammar:  (terminals are in 'quotes' or marked with an *asterisk)
 
         Input          <-  Equation
                            Input ',' Equation
@@ -49,3 +52,14 @@ Design:
                            Parentheses
         Parentheses    <-  '(' Additive ')'
 
+        
+        Building:
+
+        The language used is C++11. The code is built under VS 2015. There are no external
+        dependencies for the application except the standard library.
+
+
+        Unit testing:
+
+        A simple testsuite of the modules using the google test framework was prepared
+        for demonstration purposes.

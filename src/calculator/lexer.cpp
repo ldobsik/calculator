@@ -20,12 +20,32 @@ const vector<token> tokenize(const string &s)
             continue;
         }
 
-        if (c >= '0' && c <= '9' || c == '.') {
+        if (isdigit(c) || c == '.') {
             // number
-            size_t numlen = 0;
-            std::stod(s.substr(i), &numlen);
-            result.push_back({ tok_t::num, s.substr(i,numlen), i});
-            i += numlen;
+            const size_t numstart = i++;
+
+            // fractional
+            for (; i < s.size() && isdigit(s[i]); i++) {}
+            if (c == '.') {
+                if (i == numstart + 1) { // this was just a dot
+                    result.push_back({ tok_t::punct, { c }, i-1 });
+                    continue;
+                }
+            }
+            else if(i < s.size() && s[i] == '.')  for (i++; i < s.size() && isdigit(s[i]); i++) {}
+
+            // exponent
+            const size_t expstart = i;
+            if (i < s.size() && tolower(s[i]) == 'e') {
+                i++;
+                if (i < s.size() && (s[i] == '+' | s[i] == '-')) { i++; }
+                if (i == s.size() || !isdigit(s[i])) {
+                    i = expstart; // invalid exponent, recover to fractional only
+                }
+                for (; i < s.size() && isdigit(s[i]); i++) {};
+            }
+
+            result.push_back({ tok_t::num, s.substr(numstart,i-numstart), numstart });
         }
         else if (isalpha(c)) {
             // identifier

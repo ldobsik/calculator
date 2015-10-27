@@ -74,23 +74,23 @@ std::string affine<T>::prettyPrintTerm(const std::pair<std::string, T> & t) cons
 template<typename T>
 std::ostream& operator<< (std::ostream& os, const affine<T>& b)
 {
-    bool pvars = false;
+    bool is_first = true;
     for (auto &x: b.x) {
         if (x.second == 0) continue;
-        if (pvars) {
+        if (!is_first) {
             if(x.second > 0) os << " + ";
             else os << " - ";
         }
-        os << b.prettyPrintTerm(x).substr(pvars && x.second < 0);
-        pvars = true;
+        os << b.prettyPrintTerm(x).substr(!is_first && x.second < 0);
+        is_first = false;
     }
 
-    if (b.d != 0 || !pvars) {
-        if (pvars) {
+    if (b.d != 0 || is_first) {
+        if (!is_first) {
             if (b.d > 0) os << " + ";
             else os << " - ";
         }
-        os << b.prettyPrintTerm(std::make_pair("", b.d)).substr(pvars && b.d < 0);
+        os << b.prettyPrintTerm(std::make_pair("", b.d)).substr(!is_first && b.d < 0);
     }
 
 

@@ -6,6 +6,8 @@
 #include "parser.h"
 #include "affine.h"
 
+//#include <boost/multiprecision/cpp_dec_float.hpp>
+//using numtype  = boost::multiprecision::cpp_dec_float_50;
 using numtype  = double;
 using atomtype = affine<numtype>;
 using restype  = parser<atomtype>::result;

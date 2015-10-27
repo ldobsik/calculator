@@ -114,6 +114,7 @@ T parser<T>::parse_expr(const token*& pt, const expr_rule cr)
             if (pt->type == tok_t::num) {
                 std::istringstream ss(pt->s);
                 ss >> result;
+                if(ss.fail()) throw error(pt, "unable to parse the input as a floating point number");
                 pt++;
             }
             else if (pt->type == tok_t::id) {

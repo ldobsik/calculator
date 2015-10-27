@@ -24,6 +24,24 @@ TEST(Tokenize, Number)
     EXPECT_EQ(tokenize("   1.125e-1   "), number);
 }
 
+TEST(Tokenize, VerySmallNumber)
+{
+    std::vector<token> number{
+        { tok_t::num, "1e-1000", 3 },
+        { tok_t::end, "", 13 }
+    };
+    EXPECT_EQ(tokenize("   1e-1000   "), number);
+}
+
+TEST(Tokenize, VeryBigNumber)
+{
+    std::vector<token> number{
+        { tok_t::num, "1e+1000", 3 },
+        { tok_t::end, "", 13 }
+    };
+    EXPECT_EQ(tokenize("   1e+1000   "), number);
+}
+
 TEST(Tokenize, Id)
 {
     std::vector<token> id{ 

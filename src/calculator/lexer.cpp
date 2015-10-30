@@ -8,12 +8,17 @@
 using std::vector;
 using std::string;
 
-const vector<token> tokenize(const string &s)
+//-------------------------------------------------------------------
+static inline void skipDigits_(const string &s, size_t &i)
+{
+  for (; i < s.size() && isdigit(s[i]); i++) {}
+}
+
+vector<token> tokenize(const string &s)
 {
     vector<token> result;
-    size_t i = 0;
-
-    for (; i < s.size();) {
+    
+    for (size_t i = 0; i < s.size();) {
         char c = s[i];
         if (isspace(c)) {
             i++; 
@@ -22,27 +27,32 @@ const vector<token> tokenize(const string &s)
 
         if (isdigit(c) || c == '.') {
             // number
-            const size_t numstart = i++;
+            const size_t numstart = i;
 
-            // fractional
-            for (; i < s.size() && isdigit(s[i]); i++) {}
-            if (c == '.') {
-                if (i == numstart + 1) { // this was just a dot
-                    result.push_back({ tok_t::punct, { c }, i-1 });
+            // fractional 
+            skipDigits_(s, i);
+            if (s[i] == '.') { 
+                i++;
+                skipDigits_(s, i);
+
+                if (i == numstart + 1) {
+                    // this was just a dot
+                    result.push_back({ tok_t::punct,{ c }, numstart });
                     continue;
                 }
             }
-            else if(i < s.size() && s[i] == '.')  for (i++; i < s.size() && isdigit(s[i]); i++) {}
 
             // exponent
             const size_t expstart = i;
             if (i < s.size() && tolower(s[i]) == 'e') {
                 i++;
-                if (i < s.size() && (s[i] == '+' | s[i] == '-')) { i++; }
+                if (i < s.size() && (s[i] == '+' || s[i] == '-')) { i++; }
                 if (i == s.size() || !isdigit(s[i])) {
                     i = expstart; // invalid exponent, recover to fractional only
                 }
-                for (; i < s.size() && isdigit(s[i]); i++) {};
+                else {
+                    skipDigits_(s, i);
+                }
             }
 
             result.push_back({ tok_t::num, s.substr(numstart,i-numstart), numstart });
@@ -62,3 +72,10 @@ const vector<token> tokenize(const string &s)
     result.push_back({ tok_t::end, "", s.size() });
     return result;
 }
+
+//-------------------------------------------------------------------
+
+bool operator == (const token & t1, const token & t2)
+{
+    return (t1.type == t2.type) && (t1.s == t2.s) && (t1.pos == t2.pos);
+};

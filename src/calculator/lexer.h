@@ -12,11 +12,11 @@ struct token {
       tok_t type;
       std::string s;
       size_t pos;
-
-      bool operator == (const token & t2) const { return type == t2.type && s == t2.s && pos == t2.pos; };
 };
 
-const std::vector<token> tokenize(const std::string &);
+std::vector<token> tokenize(const std::string &);
+
+bool operator == (const token & t1, const token & t2);
 
 #endif
 

@@ -15,13 +15,40 @@ TEST(Tokenize, Empty)
     EXPECT_EQ(tokenize(""), empty);
 }
 
-TEST(Tokenize, Number)
+TEST(Tokenize, Number1)
 {
     std::vector<token> number{ 
         { tok_t::num, "1.125e-1", 3 },
         { tok_t::end, "", 14 }
     };
     EXPECT_EQ(tokenize("   1.125e-1   "), number);
+}
+
+TEST(Tokenize, Number2)
+{
+    std::vector<token> number{
+        { tok_t::num, ".1e+1", 0 },
+        { tok_t::end, "", 5 }
+    };
+    EXPECT_EQ(tokenize(".1e+1"), number);
+}
+
+TEST(Tokenize, Number3)
+{
+    std::vector<token> number{
+        { tok_t::num, "1.1e-1", 0 },
+        { tok_t::end, "", 6 }
+    };
+    EXPECT_EQ(tokenize("1.1e-1"), number);
+}
+
+TEST(Tokenize, Number4)
+{
+    std::vector<token> number{
+        { tok_t::num, "1.e1", 0 },
+        { tok_t::end, "", 4 }
+    };
+    EXPECT_EQ(tokenize("1.e1"), number);
 }
 
 TEST(Tokenize, VerySmallNumber)

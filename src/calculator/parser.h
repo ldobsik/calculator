@@ -43,46 +43,50 @@ private:
         parentheses,
     };
 
-    static T parse_expr(const token*&, const expr_rule);
-    static result parse_eq(const token*&);
+    const token* pt;
+
+    parser(const token* it) : pt(it) {};
+    T parse_expr(const expr_rule);
+    result parse_eq();
+    std::vector<result> parse_list();
 };
 
 
 template<typename T>
-T parser<T>::parse_expr(const token*& pt, const expr_rule cr)
+T parser<T>::parse_expr(const expr_rule cr)
 {
     const token* ot = pt;   // operator token (for diagnostics)
     T result{ 0 };
     try {
         switch (cr) {
         case expr_rule::additive:
-            result = parse_expr(pt, expr_rule::multiplicative);
+            result = parse_expr(expr_rule::multiplicative);
             for (;;) {
                 if (pt->s == "+") {
                     ot = pt;
                     pt++;
-                    result = result + parse_expr(pt, expr_rule::multiplicative);
+                    result = result + parse_expr(expr_rule::multiplicative);
                 }
                 else if (pt->s == "-") {
                     ot = pt;
                     pt++;
-                    result = result - parse_expr(pt, expr_rule::multiplicative);
+                    result = result - parse_expr(expr_rule::multiplicative);
                 }
                 else break;
             }
             break;
         case expr_rule::multiplicative:
-            result = parse_expr(pt, expr_rule::unary);
+            result = parse_expr(expr_rule::unary);
             for (;;) {
                 if (pt->s == "*") {
                     ot = pt;
                     pt++;
-                    result = result * parse_expr(pt, expr_rule::unary);
+                    result = result * parse_expr(expr_rule::unary);
                 }
                 else if (pt->s == "/") {
                     ot = pt;
                     pt++;
-                    result = result / parse_expr(pt, expr_rule::unary);
+                    result = result / parse_expr(expr_rule::unary);
                 }
                 else break;
             }
@@ -91,23 +95,23 @@ T parser<T>::parse_expr(const token*& pt, const expr_rule cr)
             if (pt->s == "-") {
                 ot = pt;
                 pt++;
-                result = -parse_expr(pt, expr_rule::unary);
+                result = -parse_expr(expr_rule::unary);
             }
             else if (pt->s == "+") {
                 ot = pt;
                 pt++;
-                result = parse_expr(pt, expr_rule::unary);
+                result = parse_expr(expr_rule::unary);
             }
             else {
-                result = parse_expr(pt, expr_rule::power);
+                result = parse_expr(expr_rule::power);
             }
             break;
         case expr_rule::power:
-            result = parse_expr(pt, expr_rule::primary);
+            result = parse_expr(expr_rule::primary);
             if (pt->s == "^") {
                 ot = pt;
                 pt++;
-                result = pow(result, parse_expr(pt, expr_rule::unary));
+                result = pow(result, parse_expr(expr_rule::unary));
             }
             break;
         case expr_rule::primary:
@@ -122,7 +126,7 @@ T parser<T>::parse_expr(const token*& pt, const expr_rule cr)
                     // function
                     ot = pt;
                     pt++;
-                    T arg = parse_expr(pt, expr_rule::parentheses);
+                    T arg = parse_expr(expr_rule::parentheses);
                     result = log(arg);
                 }
                 else {
@@ -135,14 +139,14 @@ T parser<T>::parse_expr(const token*& pt, const expr_rule cr)
                 }
             }
             else if (pt->s == "(") {
-                result = parse_expr(pt, expr_rule::parentheses);
+                result = parse_expr(expr_rule::parentheses);
             }
             else throw error(pt, "missing operand");
             break;
         case expr_rule::parentheses:
             if (pt->s != "(") throw error(pt, "missing left parenthesis");
             pt++;
-            result = parse_expr(pt, expr_rule::additive);
+            result = parse_expr(expr_rule::additive);
             if (pt->s != ")") throw error(pt, "missing right parenthesis");
             pt++;
             break;
@@ -156,9 +160,9 @@ T parser<T>::parse_expr(const token*& pt, const expr_rule cr)
 }
 
 template<typename T>
-typename parser<T>::result parser<T>::parse_eq(const token*& pt)
+typename parser<T>::result parser<T>::parse_eq()
 {
-    T lhs = parse_expr(pt, expr_rule::additive);
+    T lhs = parse_expr(expr_rule::additive);
 
     if (pt->s != "=") return result{ lhs, false };
     
@@ -166,7 +170,7 @@ typename parser<T>::result parser<T>::parse_eq(const token*& pt)
     pt++;
 
     try {
-        lhs = lhs - parse_expr(pt, expr_rule::additive);
+        lhs = lhs - parse_expr(expr_rule::additive);
     }
     catch (std::exception &e) {
         throw error(ot, e.what());
@@ -176,24 +180,30 @@ typename parser<T>::result parser<T>::parse_eq(const token*& pt)
 }
 
 template<typename T>
-std::vector<typename parser<T>::result> parser<T>::parse(const std::vector<token>& vt)
+std::vector<typename parser<T>::result> parser<T>::parse_list()
 {
-    assert(vt.back().type == tok_t::end);
-
-    const token* pt = &vt[0];
-
     std::vector<result> r;
 
     if (pt->type == tok_t::end) return r;
 
-    r.push_back(parse_eq(pt));
+    r.push_back(parse_eq());
 
     for (;;) {
         if (pt->type == tok_t::end) return r;
         if (pt->s != ",") throw error(pt, "unexpected input");
         pt++;
-        r.push_back(parse_eq(pt));
+        r.push_back(parse_eq());
     }
+}
+
+template<typename T>
+std::vector<typename parser<T>::result> parser<T>::parse(const std::vector<token>& vt)
+{
+    assert(vt.back().type == tok_t::end);
+
+    parser<T> p(&vt[0]);
+
+    return p.parse_list();
 }
 
 #endif

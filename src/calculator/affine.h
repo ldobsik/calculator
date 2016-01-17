@@ -10,7 +10,8 @@
 #include <map>
 
 template<typename T>
-struct affine {
+class affine {
+public:
     struct error : public std::exception {
         const std::string msg;
         error(const std::string & im) :msg(im) {};

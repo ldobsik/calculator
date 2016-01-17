@@ -55,8 +55,9 @@ Design:
         
         Building:
 
-        The language used is C++11. The code is built under VS 2015. There are no external
-        dependencies for the application except the standard library.
+        The language used is C++14. The project is set up to be built under VS 2015 but should 
+        compile with any C++14 compiler. There are no external dependencies for the application
+        except the standard library.
 
 
         Unit testing:

@@ -12,53 +12,66 @@ using numtype  = double;
 using atomtype = affine<numtype>;
 using restype  = parser<atomtype>::result;
 
+template<typename T>
+void printEq(const T &a)
+{
+    if (a == 0) std::cout << "True.";
+    else        std::cout << "Not true.";
+}
 
-void printAnswer(restype &z)
+template<>
+void printEq(const affine<numtype> &a)
+{
+    //equation
+    auto d = a.d; // rhs
+    auto x = a.x;
+
+    // collect free variables
+    std::vector<std::string> free_vars;
+    for (auto i = begin(x); i != end(x);) {
+        if (i->second == numtype(0)) {
+            free_vars.push_back(i->first);
+            i = x.erase(i);
+        }
+        else ++i;
+    }
+
+    // no fixed variables
+    if (x.size() == 0) {
+        if (d == 0) std::cout << "True.";
+        else        std::cout << "Not true.";
+    }
+    // 1 fixed variable
+    else if (x.size() == 1) {
+        std::cout << begin(x)->first << " = " << -d / begin(x)->second;
+    }
+    // more than 1 fixed variable
+    else {
+        std::cout << a << " = 0";
+    }
+
+    if (free_vars.size() != 0) {
+        std::cout << "    This holds for any ";
+        std::copy(begin(free_vars), end(free_vars), std::ostream_iterator<std::string>(std::cout, ","));
+        std::cout << "\b.";
+    }
+}
+
+void printAnswer(const restype &z)
 {
     std::cout << "Answer: ";
 
     if (!z.equal_to_zero) 
     {
         // expression
-        std::cout << z.atom << std::endl;
+        std::cout << z.atom;
     }
     else 
     {
-        //equation
-        auto &d = z.atom.d; // rhs
-        auto &x = z.atom.x;
-
-        // collect free variables
-        std::vector<std::string> free_vars;
-        for (auto i = begin(x); i != end(x);) {
-            if (i->second == numtype(0)) {
-                free_vars.push_back(i->first);
-                i = x.erase(i);
-            }
-            else ++i;
-        }
-
-        // no fixed variables
-        if (x.size() == 0) {
-            if (d == 0) std::cout << "True.";
-            else        std::cout << "Not true.";
-        }
-        // 1 fixed variable
-        else if (x.size() == 1) {
-            std::cout << begin(x)->first << " = " << -d / begin(x)->second;
-        }
-        // more than 1 fixed variable
-        else {
-            std::cout << z.atom << " = 0";
-        }
-
-        if (free_vars.size() != 0) {
-            std::cout << "    This holds for any ";
-            std::copy(begin(free_vars), end(free_vars), std::ostream_iterator<std::string>(std::cout, ","));
-            std::cout << "\b.";
-        }
-        std::cout << std::endl;
+        printEq(z.atom);
     }
+
+    std::cout << std::endl;
 }
 
 int main()

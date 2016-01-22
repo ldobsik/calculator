@@ -56,7 +56,7 @@ private:
 template<typename T>
 T parser<T>::parse_expr(const expr_rule cr)
 {
-    const token* ot = pt;   // operator token (for diagnostics)
+    auto ot = pt;   // operator token (for diagnostics)
     T result{ 0 };
     try {
         switch (cr) {

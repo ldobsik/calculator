@@ -8,11 +8,12 @@
 using std::vector;
 using std::string;
 
-//-------------------------------------------------------------------
+// helper function
 static inline void skipDigits_(const string &s, size_t &i)
 {
   for (; i < s.size() && isdigit(s[i]); i++) {}
 }
+
 
 vector<token> tokenize(const string &s)
 {

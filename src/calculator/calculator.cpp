@@ -6,12 +6,15 @@
 #include "parser.h"
 #include "affine.h"
 
+
 //#include <boost/multiprecision/cpp_dec_float.hpp>
 //using numtype  = boost::multiprecision::cpp_dec_float_50;
 using numtype  = double;
 using atomtype = affine<numtype>;
 using restype  = parser<atomtype>::result;
 
+
+// Print solution to equation   'a=0'
 template<typename T>
 void printEq(const T &a)
 {
@@ -19,6 +22,7 @@ void printEq(const T &a)
     else        std::cout << "Not true.";
 }
 
+// specialization for affine 'a'
 template<>
 void printEq(const affine<numtype> &a)
 {
@@ -50,6 +54,7 @@ void printEq(const affine<numtype> &a)
         std::cout << a << " = 0";
     }
 
+    // list free vars
     if (free_vars.size() != 0) {
         std::cout << "    This holds for any ";
         std::copy(begin(free_vars), end(free_vars), std::ostream_iterator<std::string>(std::cout, ","));
@@ -74,6 +79,8 @@ void printAnswer(const restype &z)
     std::cout << std::endl;
 }
 
+
+// main program
 int main()
 {
     for (;;) {

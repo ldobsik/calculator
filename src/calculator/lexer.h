@@ -4,14 +4,16 @@
 #include <string>
 #include <vector>
 
+// token types
 enum class tok_t {
     end, num, id, punct
 };
 
+
 struct token {
       tok_t type;
-      std::string s;
-      size_t pos;
+      std::string s; // extracted token string
+      size_t pos;    // position in the original string
 };
 
 std::vector<token> tokenize(const std::string &);

@@ -16,7 +16,6 @@
 #include "lexer.h"
 
 //-------------------------------------------------------
-
 template<typename T>
 class parser {
 public:
@@ -43,15 +42,17 @@ private:
         parentheses,
     };
 
+    // parser current token pointer
     const token* pt;
 
+    // private constructor - parser objects are used only temporarily in the 'parse' function
     parser(const token* it) : pt(it) {};
     T parse_expr(const expr_rule);
     result parse_eq();
     std::vector<result> parse_list();
 };
 
-
+// parse expression
 template<typename T>
 T parser<T>::parse_expr(const expr_rule cr)
 {
@@ -159,6 +160,7 @@ T parser<T>::parse_expr(const expr_rule cr)
     return result;
 }
 
+// parse equation
 template<typename T>
 typename parser<T>::result parser<T>::parse_eq()
 {
@@ -179,6 +181,7 @@ typename parser<T>::result parser<T>::parse_eq()
     return result{ lhs, true };
 }
 
+// parse list of equations
 template<typename T>
 std::vector<typename parser<T>::result> parser<T>::parse_list()
 {
@@ -196,6 +199,8 @@ std::vector<typename parser<T>::result> parser<T>::parse_list()
     }
 }
 
+
+// parse vector of tokens - class interface
 template<typename T>
 std::vector<typename parser<T>::result> parser<T>::parse(const std::vector<token>& vt)
 {

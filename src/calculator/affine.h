@@ -9,6 +9,11 @@
 #include <exception>
 #include <map>
 
+/*
+   affine expression class (constant + linear)
+   the linear part is implemented as a map from variable name to its coefficient value
+*/
+
 template<typename T>
 class affine {
 public:

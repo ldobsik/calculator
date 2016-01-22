@@ -62,9 +62,11 @@ void printEq(const affine<numtype> &a)
     }
 }
 
-void printAnswer(const restype &z)
+// print parser result
+template<typename T>
+void printResult(const T &z)
 {
-    std::cout << "Answer: ";
+    std::cout << "Result: ";
 
     if (!z.equal_to_zero) 
     {
@@ -94,7 +96,7 @@ int main()
             auto result = parser<atomtype>::parse(t);
             for (auto &z : result) {
                 // iterate over all comma-separated equations/expressions
-                printAnswer(z);
+                printResult(z);
             }
 
         }
